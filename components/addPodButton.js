@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     right: 20,
   },
   button: {
-    backgroundColor: "#c83e4d",
+    backgroundColor: "#4C3957",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 16,
@@ -26,14 +26,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 32,
-  },
-  widget: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 16,
-    // backgroundColor: colors[0],
   },
 });
 

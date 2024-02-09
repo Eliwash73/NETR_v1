@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function PodScreen() {
+export default function SettingsPage() {
+  const [isEnabled, setIsEnabled] = React.useState(true);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen Coming Soon...</Text>
+      <Text style={styles.title}>Settings Coming Soon...</Text>
     </View>
   );
 }
