@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function CalendarScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>CalendarScreen</Text>
+      <Text style={styles.title}>Calendar Page Comming Soon</Text>
     </View>
   );
 }
@@ -12,9 +12,9 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    // justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
+    // backgroundColor: "#F5FCFF",
   },
   title: {
     fontSize: 20,
