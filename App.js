@@ -19,7 +19,6 @@ export default function App() {
 
   return (
     <NavigationContainer theme={NETRTheme}>
-      {/* backgroundColor= "#F8FFEF" */}
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({ route }) => ({
@@ -38,8 +37,6 @@ export default function App() {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          // tabBarActiveTintColor: "#1B998B",
-          // tabBarInactiveTintColor: "#8FZ57F",
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />

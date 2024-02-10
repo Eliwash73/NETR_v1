@@ -27,8 +27,8 @@ const PodWidget = ({ title, color }) => {
     </View>
   );
 };
-//  TODO:       orange     grey        purple
-const colors = ["#F4B860", "#6b818c", "#8d6b94"];
+//                  orange     grey        purple
+const colors = ["#8F754F", "#6b818c", "#8d6b94"];
 
 const styles = StyleSheet.create({
   defaultBG: {
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    color: "#f8ffef",
   },
 });
 
