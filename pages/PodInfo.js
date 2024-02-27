@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Modal from "react-native-modal";
 
-export default function PodScreen() {
+export default function PodInfoScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen Coming Soon...</Text>
+      <Text style={styles.title}>Calendar Page Coming Soon...</Text>
     </View>
   );
 }

@@ -1,14 +1,33 @@
-import React, { Component } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { nanoid } from "nanoid";
+import React, { Component, useState } from "react";
 import {
+  Button,
   FlatList,
+  Pressable,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
   useColorScheme,
 } from "react-native";
+import { SelectList } from "react-native-dropdown-select-list";
+import "react-native-get-random-values";
+import Modal from "react-native-modal";
 import PodWidget from "../components/PodWidget";
 import AddPod from "../components/addPodButton";
+import PodInfoScreen from "./PodInfo";
+
+const HONEYDEW = "#f8ffef";
+const PURPLE = "#4C3957";
+const TEAL = "#1B998B";
+const GREY = "#6B818C";
+const RED = "#C83E4D";
+const PEACH = "#F4D6CC";
+const YELLOW = "#F4N860";
+
 const DATA = [
   {
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -67,29 +86,93 @@ const DATA = [
   },
 ];
 
+const colorSelect = [
+  { key: "1", value: "Honeydew", color: HONEYDEW },
+  { key: "2", value: "Purple", color: PURPLE },
+  { key: "3", value: "Teal", color: TEAL },
+  { key: "4", value: "Grey", color: GREY },
+  { key: "5", value: "Red", color: RED },
+  { key: "6", value: "Peach", color: PEACH },
+  { key: "7", value: "Yellow", color: YELLOW },
+];
+
 export default function HomeScreen() {
-  const scheme = useColorScheme();
-  const handleButtonPress = () => {
-    // Define your button press logic here
-    alert("Button clicked!");
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selected, setSelected] = useState("");
+  const [podList, setPodList] = useState([]);
+  const [podName, setPodName] = useState("");
+
+  const handleModal = () => setModalVisible(() => !isModalVisible);
+  const createPod = () => {
+    // Create a new pod  with the entered name and selected color
+    const newPod = {
+      id: nanoid(), //generate unique identifier
+      title: podName,
+      color: selected,
+    };
+    // Update the pod list with the new pod
+    setPodList([...podList, newPod]);
+    // Close the modal
+    setModalVisible(false);
+    setPodName("");
+    console.log(newPod);
   };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ flex: 1 }}>
       <FlatList
-        data={DATA}
+        data={podList}
         renderItem={({ item }) => (
           <PodWidget title={item.title} color={item.color} />
         )}
         keyExtractor={(item) => item.id}
+        bounces={true}
       />
-      <AddPod onPress={handleButtonPress} buttonText="+" />
-    </SafeAreaView>
+      <AddPod onPress={handleModal} buttonText="+" />
+      {/* <AddPod onPress={GoToButton} buttonText="Add a Pod" /> */}
+      {/* <GoToButton screenName="PodInfo" /> */}
+
+      <Modal
+        isVisible={isModalVisible}
+        onBackButtonPress={() => setModalVisible(false)}
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View style={styles.modal}>
+          <ScrollView>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Pod name"
+              placeholderTextColor={PURPLE}
+              onChangeText={(text) => setPodName(text)}
+              maxLength={20}
+              value={podName}
+            />
+            <Text style={styles.title}>Color:</Text>
+            <SelectList
+              setSelected={(val) => setSelected(val)}
+              data={colorSelect}
+              save="value"
+              defaultOption={"Teal"}
+              search={false}
+            />
+          </ScrollView>
+          <Button title="Create" onPress={createPod} color={TEAL} />
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  modal: {
+    width: "100%",
+    height: "60%",
+    // alignItems: "center",
+    // justifyContent: "center",
+    backgroundColor: HONEYDEW,
+    borderRadius: 16,
+    padding: 25,
+    // paddingTop: 150,
   },
   item: {
     padding: 20,
@@ -98,6 +181,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
+    color: PURPLE,
+  },
+  text: {
+    fontSize: 18,
+    color: PURPLE,
+  },
+  input: {
+    borderWidth: 1,
+    height: 40,
+    borderRadius: 8,
+    padding: 10,
   },
 });
