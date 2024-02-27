@@ -15,14 +15,23 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 20,
-    right: 20,
+    right: 10,
+    // padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    width: "20%",
+    alignItems: "center",
   },
   button: {
     backgroundColor: "#4C3957",
     paddingVertical: 10,
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
     borderRadius: 16,
+    width: "90%",
+    alignItems: "center",
   },
+
   buttonText: {
     color: "white",
     fontSize: 32,
