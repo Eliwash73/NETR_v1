@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import NETRTheme from "./components/NETRTheme";
+import { NETRTheme } from "./components/NETRTheme";
 import CalendarScreen from "./pages/Calendar";
 import HomeScreen from "./pages/Home";
 import PodScreen from "./pages/Pod";

@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { PURPLE } from "../components/NETRTheme";
 
 const AddPod = ({ onPress, buttonText }) => {
   return (
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#4C3957",
+    backgroundColor: PURPLE,
     paddingVertical: 10,
     // paddingHorizontal: 30,
     borderRadius: 16,

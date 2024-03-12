@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { Component } from "react";
 import {
   Button,
@@ -36,31 +35,31 @@ function colorChanger(color) {
   }
 }
 
-export default function PodWidget({ PodTitle, PodColor }) {
-  const navigation = useNavigation();
-  colorChanger(PodColor);
+export default function PodItemWidget({ PodItemTitle, PodItemColor }) {
+  colorChanger(PodItemColor);
 
   return (
-    <View>
-      <Pressable
-        style={colorChanged}
-        onPress={() =>
-          navigation.navigate("PodInfo", { title: PodTitle, color: PodColor })
-        }
-      >
-        <Text style={styles.title}>{PodTitle}</Text>
+    <View style={styles.itemContainer}>
+      <Pressable style={colorChanged} onPress={() => null}>
+        <Text style={styles.title}>{PodItemTitle}</Text>
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  itemContainer: {
+    justifyContent: "flex-end",
+    borderRadius: 16,
+    padding: 10,
+    height: 150,
+  },
   honeydewBC: {
     backgroundColor: HONEYDEW,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 16,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
   },
   purpleBC: {
     backgroundColor: PURPLE,
