@@ -49,6 +49,7 @@ export default function PodInfoScreen({ route }) {
       id: nanoid(), //generate unique identifier
       title: podItemName,
       color: color,
+      pod: title,
     };
     // Update the pod list with the new pod
     setPodItemList([...podItemList, newPodItem]);
