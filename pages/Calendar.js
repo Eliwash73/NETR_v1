@@ -27,13 +27,13 @@ export default function Example() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <FlatGrid
-        itemDimension={130}
+      <FlatList
         data={items}
         style={styles.gridView}
         // staticDimension={300}
         // fixed
-        spacing={10}
+        // spacing={10}
+        bounces={true}
         renderItem={({ item }) => (
           <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
             <Text style={styles.itemName}>{item.name}</Text>

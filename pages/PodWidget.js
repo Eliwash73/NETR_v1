@@ -36,7 +36,7 @@ function colorChanger(color) {
   }
 }
 
-export default function PodWidget({ PodTitle, PodColor }) {
+export default function PodWidget({ PodTitle, PodColor, PodID }) {
   const navigation = useNavigation();
   colorChanger(PodColor);
 
@@ -45,7 +45,11 @@ export default function PodWidget({ PodTitle, PodColor }) {
       <Pressable
         style={colorChanged}
         onPress={() =>
-          navigation.navigate("PodInfo", { title: PodTitle, color: PodColor })
+          navigation.navigate("PodInfo", {
+            title: PodTitle,
+            color: PodColor,
+            podID: PodID,
+          })
         }
       >
         <Text style={styles.title}>{PodTitle}</Text>

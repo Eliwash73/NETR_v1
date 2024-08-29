@@ -15,14 +15,15 @@ const Stack = createNativeStackNavigator();
 function Tabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Pod"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === "Home") {
-            iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Pod") {
+          // if (route.name === "Home") {
+          //   iconName = focused ? "home" : "home-outline";
+          // } else
+          if (route.name === "Pod") {
             iconName = focused ? "grid" : "grid-outline";
           } else if (route.name === "Calendar") {
             iconName = focused ? "calendar" : "calendar-outline";

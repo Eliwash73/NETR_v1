@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
+// import * as SQLite from "expo-sqlite";
 import { nanoid } from "nanoid";
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   Button,
   FlatList,
@@ -12,11 +13,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
-import "react-native-get-random-values";
-import { FlatGrid } from "react-native-super-grid";
-
 import Modal from "react-native-modal";
+import { FlatGrid } from "react-native-super-grid";
 import {
   GREY,
   HONEYDEW,
@@ -28,43 +26,94 @@ import {
   colorSelect,
 } from "../components/NETRTheme";
 import PodItemWidget from "../components/PodItemWidget";
-import PodWidget from "../components/PodWidget";
 import AddPod from "../components/addPodButton";
+import PodWidget from "./PodWidget";
 
 function getColorByValue(value) {
   const selectedColor = colorSelect.find((item) => item.value === value);
   return selectedColor.color;
 }
 
+// const db = SQLite.openDatabase("pod.db");
+
 export default function PodInfoScreen({ route }) {
   const handleModal = () => setModalVisible(() => !isModalVisible);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [podItemList, setPodItemList] = useState([]);
-  const [podItemName, SetPodItemName] = useState("");
   // Create a new pod  with the entered name and selected color
-  const { title, color } = route.params;
-  const createPodItem = () => {
-    // Create a new pod  with the entered name and selected color
-    const newPodItem = {
-      id: nanoid(), //generate unique identifier
-      title: podItemName,
-      color: color,
+  const { title, color, podID } = route.params;
+
+  //db
+  const [podItems, setPodItems] = useState([]);
+  const [podItemName, setPodItemName] = useState("");
+
+  // useEffect(() => {
+  //   db.transaction((tx) => {
+  //     tx.executeSql(
+  //       `CREATE TABLE IF NOT EXISTS pod_items (
+  //         item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  //         pod_id INTEGER,
+  //         item_name TEXT)`
+  //     );
+  //   });
+
+  //   db.transaction((tx) => {
+  //     tx.executeSql(
+  //       "SELECT * FROM pod_items",
+  //       null,
+  //       (txObj, resultSet) => setPodItems(resultSet.rows._array),
+  //       (txObj, error) => console.log(error)
+  //     );
+  //   });
+  // }, [db]);
+
+  const addPodItems = () => {
+    // db.transaction((tx) => {
+    //   tx.executeSql(
+    //     `INSERT INTO pod_items (item_name, pod_id) VALUES (?,?)`,
+    //     [podItemName, podID],
+    //     (txObj, resultSet) => {
+    let existingPodItems = [...podItems];
+    let newPodItem = {
+      id: nanoid(),
+      // id: resultSet.insertId,
+      item_name: podItemName,
+      pod_id: podID,
     };
-    // Update the pod list with the new pod
-    setPodItemList([...podItemList, newPodItem]);
-    // Close the modal
+    existingPodItems.push(newPodItem);
+    setPodItems(existingPodItems);
     setModalVisible(false);
-    SetPodItemName("");
+    setPodItemName("");
     console.log(newPodItem);
+    //     },
+    //     (txObj, error) => console.log(error)
+    //   );
+    // });
   };
 
+  // const createPodItem = () => {
+  //   // Create a new pod  with the entered name and selected color
+  //   const newPodItem = {
+  //     id: nanoid(), //generate unique identifier
+  //     title: podItemName,
+  //     color: color,
+  //     pod: title,
+  //     pod_id: podID,
+  //   };
+  //   // Update the pod list with the new pod
+  //   setPodItemList([...podItemList, newPodItem]);
+  //   // Close the modal
+  //   setModalVisible(false);
+  //   SetPodItemName("");
+  //   console.log(newPodItem);
+  // };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>{JSON.parse(JSON.stringify(title))} Pod</Text>
 
       <FlatGrid
         itemDimension={130}
-        data={podItemList}
+        data={podItems}
         style={styles.gridView}
         spacing={10}
         renderItem={({ item }) => (
@@ -79,7 +128,7 @@ export default function PodInfoScreen({ route }) {
             ]}
           >
             <Pressable onPress={() => null}>
-              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.title}>{item.item_name}</Text>
             </Pressable>
           </View>
         )}
@@ -98,15 +147,15 @@ export default function PodInfoScreen({ route }) {
               style={styles.input}
               placeholder="item name"
               placeholderTextColor={PURPLE}
-              onChangeText={(text) => SetPodItemName(text)}
+              onChangeText={(text) => setPodItemName(text)}
               maxLength={20}
               value={podItemName}
             />
           </ScrollView>
-          <Button title="ADD" onPress={createPodItem} color={TEAL} />
+          <Button title="ADD" onPress={addPodItems} color={TEAL} />
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -154,54 +203,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
   },
-  // honeydewBC: {
-  //   backgroundColor: HONEYDEW,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // purpleBC: {
-  //   backgroundColor: PURPLE,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  //   color: HONEYDEW,
-  // },
-  // tealBC: {
-  //   backgroundColor: TEAL,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // greyBC: {
-  //   backgroundColor: GREY,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // redBC: {
-  //   backgroundColor: RED,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // peachBC: {
-  //   backgroundColor: PEACH,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // yellowBC: {
-  //   backgroundColor: YELLOW,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
 });
