@@ -34,8 +34,6 @@ function getColorByValue(value) {
   return selectedColor.color;
 }
 
-// const db = SQLite.openDatabase("pod.db");
-
 export default function PodInfoScreen({ route }) {
   const handleModal = () => setModalVisible(() => !isModalVisible);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -46,66 +44,19 @@ export default function PodInfoScreen({ route }) {
   const [podItems, setPodItems] = useState([]);
   const [podItemName, setPodItemName] = useState("");
 
-  // useEffect(() => {
-  //   db.transaction((tx) => {
-  //     tx.executeSql(
-  //       `CREATE TABLE IF NOT EXISTS pod_items (
-  //         item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //         pod_id INTEGER,
-  //         item_name TEXT)`
-  //     );
-  //   });
-
-  //   db.transaction((tx) => {
-  //     tx.executeSql(
-  //       "SELECT * FROM pod_items",
-  //       null,
-  //       (txObj, resultSet) => setPodItems(resultSet.rows._array),
-  //       (txObj, error) => console.log(error)
-  //     );
-  //   });
-  // }, [db]);
-
   const addPodItems = () => {
-    // db.transaction((tx) => {
-    //   tx.executeSql(
-    //     `INSERT INTO pod_items (item_name, pod_id) VALUES (?,?)`,
-    //     [podItemName, podID],
-    //     (txObj, resultSet) => {
     let existingPodItems = [...podItems];
     let newPodItem = {
-      // id: nanoid(),
-      // id: resultSet.insertId,
       item_name: podItemName,
       pod_id: podID,
+
     };
     existingPodItems.push(newPodItem);
     setPodItems(existingPodItems);
     setModalVisible(false);
     setPodItemName("");
     console.log(newPodItem);
-    //     },
-    //     (txObj, error) => console.log(error)
-    //   );
-    // });
   };
-
-  // const createPodItem = () => {
-  //   // Create a new pod  with the entered name and selected color
-  //   const newPodItem = {
-  //     id: nanoid(), //generate unique identifier
-  //     title: podItemName,
-  //     color: color,
-  //     pod: title,
-  //     pod_id: podID,
-  //   };
-  //   // Update the pod list with the new pod
-  //   setPodItemList([...podItemList, newPodItem]);
-  //   // Close the modal
-  //   setModalVisible(false);
-  //   SetPodItemName("");
-  //   console.log(newPodItem);
-  // };
   const numColumns = 2;
 
   return (
@@ -113,16 +64,11 @@ export default function PodInfoScreen({ route }) {
       <Text style={styles.title}>{JSON.parse(JSON.stringify(title))} Pod</Text>
 
       <FlatList
-        // itemDimension={130}
         data={podItems}
         style={styles.gridView}
         numColumns={numColumns}
         spacing={10}
         renderItem={({ item }) => (
-          // <View style={styles.itemContainer}>
-          //   <Text style={styles.itemName}>{item.title}</Text>
-          // </View>
-          // <PodItemWidget PodItemTitle={item.title} PodItemColor={item.color} />
           <View
             style={[
               styles.itemContainer,
@@ -134,7 +80,6 @@ export default function PodInfoScreen({ route }) {
             </Pressable>
           </View>
         )}
-        // keyExt ractor={(item) => item.code}
         columnWrapperStyle={styles.columnWrapper}
       />
 
