@@ -26,7 +26,7 @@ import {
   colorSelect,
 } from "../components/NETRTheme";
 import PodItemWidget from "../components/PodItemWidget";
-import AddPod from "../components/addPodButton";
+import AddPodButton from "../components/addPodButton";
 import PodWidget from "./PodWidget";
 
 function getColorByValue(value) {
@@ -42,7 +42,7 @@ export default function PodInfoScreen({ route }) {
   // Create a new pod  with the entered name and selected color
   const { title, color, podID } = route.params;
 
-  //db
+  //pod items needs to come from the database
   const [podItems, setPodItems] = useState([]);
   const [podItemName, setPodItemName] = useState("");
 
@@ -74,7 +74,7 @@ export default function PodInfoScreen({ route }) {
     //     (txObj, resultSet) => {
     let existingPodItems = [...podItems];
     let newPodItem = {
-      id: nanoid(),
+      // id: nanoid(),
       // id: resultSet.insertId,
       item_name: podItemName,
       pod_id: podID,
@@ -106,15 +106,17 @@ export default function PodInfoScreen({ route }) {
   //   SetPodItemName("");
   //   console.log(newPodItem);
   // };
+  const numColumns = 2;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{JSON.parse(JSON.stringify(title))} Pod</Text>
 
-      <FlatGrid
-        itemDimension={130}
+      <FlatList
+        // itemDimension={130}
         data={podItems}
         style={styles.gridView}
+        numColumns={numColumns}
         spacing={10}
         renderItem={({ item }) => (
           // <View style={styles.itemContainer}>
@@ -132,9 +134,11 @@ export default function PodInfoScreen({ route }) {
             </Pressable>
           </View>
         )}
+        // keyExt ractor={(item) => item.code}
+        columnWrapperStyle={styles.columnWrapper}
       />
 
-      <AddPod onPress={handleModal} buttonText="+" />
+      <AddPodButton onPress={handleModal} buttonText="+" />
 
       <Modal
         isVisible={isModalVisible}
@@ -171,13 +175,17 @@ const styles = StyleSheet.create({
   },
   gridView: {
     marginTop: 10,
+    padding: 20,
     flex: 1,
   },
   itemContainer: {
+    flex: 1,
     justifyContent: "flex-end",
     borderRadius: 16,
     padding: 10,
     height: 150,
+    margin: 5, // Add margin to create spacing
+
     // backgroundColor: GREY,
   },
   itemName: {
@@ -202,5 +210,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 8,
     padding: 10,
+  },
+  columnWrapper: {
+    justifyContent: "space-between", // Space items within each row
   },
 });

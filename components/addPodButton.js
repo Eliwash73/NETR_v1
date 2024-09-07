@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PURPLE } from "../components/NETRTheme";
 
-const AddPod = ({ onPress, buttonText }) => {
+const AddPodButton = ({ onPress, buttonText }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -39,4 +39,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddPod;
+export default AddPodButton;

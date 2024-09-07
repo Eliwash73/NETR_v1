@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   FlatList,
   ScrollView,
@@ -24,104 +25,91 @@ import {
   YELLOW,
   colorSelect,
 } from "../components/NETRTheme";
-import AddPod from "../components/addPodButton";
+import AddPodButton from "../components/addPodButton";
+import DeletePodButton from "../components/deletePodButton";
+import { addPod, deletePod, fetchPods, initDb } from "../util/db";
 import PodInfoScreen from "./PodInfo";
 import PodWidget from "./PodWidget";
 
-// const db = await SQLite.openDatabaseAsync("pod.db");
-// await db.execAsync(`
-// PRAGMA journal_mode = WAL;
-// CREATE TABLE IF NOT EXISTS pods (
-//   id INTEGER PRIMARY KEY AUTOINCREMENT,
-//   pod_name TEXT,
-//   pod_color TEXT)
-// `);
-
-// // const delete = await db.runAsync('INSERT INTO pods (pod_name, pod_color) VALUES (?,?)')
-
-// db.transaction((tx) => {
-//   tx.executeSql(
-//     "SELECT * FROM pods",
-//     null,
-//     (txObj, resultSet) => setPods(resultSet.rows._array),
-//     (txObj, error) => console.log(error)
-//   );
-// });
-
 export default function HomeScreen() {
-  // const [selected, setSelected] = useState("Honeydew");
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Honeydew");
-  const handleModal = () => setModalVisible(() => !isModalVisible);
-  // const [podList, setPodList] = useState([]);
-  //db
-
   const [pods, setPods] = useState([]);
   const [podName, setPodName] = useState("");
 
-  const addPod = () => {
-    // db.execAsync
-    let existingPods = [...pods];
-    let newPod = {
-      // id: resultSet.insertId,
-      id: nanoid(),
-      pod_title: podName,
+  // initialize and fetch the data from the database
+  useEffect(() => {
+    initDb();
+    const fetchData = async () => {
+      const pods = await fetchPods();
+      setPods(pods);
+      // Uncomment the following line to log all the pods to the console.
+      for (const pod in pods) {
+        console.log(pods[pod]);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleModal = () => setModalVisible(!isModalVisible);
+
+  const addPodtoDB = async () => {
+    // newPodId is the return of addPod.
+    const newPodId = await addPod(podName, selectedColor);
+    const newPod = {
+      id: newPodId,
+      pod_name: podName,
       pod_color: selectedColor,
     };
-    existingPods.push(newPod);
-    setPods(existingPods);
+    try {
+      // Add the new pod to the database.
+      await addPod(newPod.id, newPod.pod_name, newPod.pod_color);
+    } catch (error) {
+      console.log("Error adding pod to database: ", error.message);
+    }
+    // Add the new pod to the state array.
+    setPods((existingPods) => [...existingPods, newPod]);
+    // Reset the state of the Modal.
     setModalVisible(false);
+    // Reset the state of podName.
     setPodName("");
     console.log(newPod);
   };
-
-  const deletePod = () => {
-    let existingPods = [...pods];
-    let newPod = {
-      // id: resultSet.insertId,
-      // id, title, and color gets passed into PodWidgets constructor
-      id: nanoid(),
-      pod_title: podName,
-      pod_color: selectedColor,
-    };
-    existingPods.push(newPod);
-    setPods(existingPods);
-    setModalVisible(false);
-    setPodName("");
-    console.log(newPod);
+  const deletePodFromDB = async (delID) => {
+    try {
+      await deletePod(delID);
+      // Remove the deleted pod from the state array.
+      setPods((existingPods) => existingPods.filter((pod) => pod.id !== delID));
+      // console.log(`Pod deleted successfully`);
+    } catch (error) {
+      console.log(`Error deleting pod ${delID} from database:`, error.message);
+    }
   };
-
-  // const createPod = () => {
-  //   // Create a new pod  with the entered name and selectedColor color
-  //   const newPod = {
-  //     id: nanoid(), //generate unique identifier
-  //     title: podName,
-  //     color: selectedColor,
-  //   };
-  //   // Update the pod list with the new pod
-  //   setPodList([...podList, newPod]);
-  //   // Close the modal
-  //   setModalVisible(false);
-  //   setPodName("");
-  //   console.log(newPod);
-  // };
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
+        style={styles.gridView}
         data={pods}
         renderItem={({ item }) => (
-          <PodWidget
-            PodTitle={item.pod_title}
-            PodColor={item.pod_color}
-            PodID={item.id}
-          />
+          <View>
+            <PodWidget
+              PodTitle={item.pod_name}
+              PodColor={item.pod_color}
+              PodID={item.id}
+            />
+            <DeletePodButton
+              podID={item.id}
+              onPress={() => deletePodFromDB(item.id)}
+              buttonText="X"
+            />
+          </View>
         )}
         keyExtractor={(item) => item.id}
         bounces={true}
       />
 
-      <AddPod onPress={handleModal} buttonText="+" />
+      <AddPodButton onPress={handleModal} buttonText="+" />
       {/* <AddPod onPress={GoToButton} buttonText="Add a Pod" /> */}
       {/* <GoToButton screenName="PodInfo" /> */}
 
@@ -149,7 +137,7 @@ export default function HomeScreen() {
               search={false}
             />
           </ScrollView>
-          <Button title="Create" onPress={addPod} color={TEAL} />
+          <Button title="Create" onPress={addPodtoDB} color={TEAL} />
         </View>
       </Modal>
     </View>
@@ -157,6 +145,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  gridView: {
+    flex: 1,
+    marginTop: 10,
+  },
   modal: {
     width: "100%",
     height: "60%",
