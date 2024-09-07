@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
+// import * as SQLite from "expo-sqlite";
 import { nanoid } from "nanoid";
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   Button,
   FlatList,
@@ -12,11 +13,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
-import "react-native-get-random-values";
-import { FlatGrid } from "react-native-super-grid";
-
 import Modal from "react-native-modal";
+import { FlatGrid } from "react-native-super-grid";
 import {
   GREY,
   HONEYDEW,
@@ -28,8 +26,8 @@ import {
   colorSelect,
 } from "../components/NETRTheme";
 import PodItemWidget from "../components/PodItemWidget";
-import PodWidget from "../components/PodWidget";
-import AddPod from "../components/addPodButton";
+import AddPodButton from "../components/addPodButton";
+import PodWidget from "./PodWidget";
 
 function getColorByValue(value) {
   const selectedColor = colorSelect.find((item) => item.value === value);
@@ -39,40 +37,38 @@ function getColorByValue(value) {
 export default function PodInfoScreen({ route }) {
   const handleModal = () => setModalVisible(() => !isModalVisible);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [podItemList, setPodItemList] = useState([]);
-  const [podItemName, SetPodItemName] = useState("");
   // Create a new pod  with the entered name and selected color
-  const { title, color } = route.params;
-  const createPodItem = () => {
-    // Create a new pod  with the entered name and selected color
-    const newPodItem = {
-      id: nanoid(), //generate unique identifier
-      title: podItemName,
-      color: color,
-      pod: title,
+  const { title, color, podID } = route.params;
+
+  //pod items needs to come from the database
+  const [podItems, setPodItems] = useState([]);
+  const [podItemName, setPodItemName] = useState("");
+
+  const addPodItems = () => {
+    let existingPodItems = [...podItems];
+    let newPodItem = {
+      item_name: podItemName,
+      pod_id: podID,
+
     };
-    // Update the pod list with the new pod
-    setPodItemList([...podItemList, newPodItem]);
-    // Close the modal
+    existingPodItems.push(newPodItem);
+    setPodItems(existingPodItems);
     setModalVisible(false);
-    SetPodItemName("");
+    setPodItemName("");
     console.log(newPodItem);
   };
+  const numColumns = 2;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>{JSON.parse(JSON.stringify(title))} Pod</Text>
 
-      <FlatGrid
-        itemDimension={130}
-        data={podItemList}
+      <FlatList
+        data={podItems}
         style={styles.gridView}
+        numColumns={numColumns}
         spacing={10}
         renderItem={({ item }) => (
-          // <View style={styles.itemContainer}>
-          //   <Text style={styles.itemName}>{item.title}</Text>
-          // </View>
-          // <PodItemWidget PodItemTitle={item.title} PodItemColor={item.color} />
           <View
             style={[
               styles.itemContainer,
@@ -80,13 +76,14 @@ export default function PodInfoScreen({ route }) {
             ]}
           >
             <Pressable onPress={() => null}>
-              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.title}>{item.item_name}</Text>
             </Pressable>
           </View>
         )}
+        columnWrapperStyle={styles.columnWrapper}
       />
 
-      <AddPod onPress={handleModal} buttonText="+" />
+      <AddPodButton onPress={handleModal} buttonText="+" />
 
       <Modal
         isVisible={isModalVisible}
@@ -99,15 +96,15 @@ export default function PodInfoScreen({ route }) {
               style={styles.input}
               placeholder="item name"
               placeholderTextColor={PURPLE}
-              onChangeText={(text) => SetPodItemName(text)}
+              onChangeText={(text) => setPodItemName(text)}
               maxLength={20}
               value={podItemName}
             />
           </ScrollView>
-          <Button title="ADD" onPress={createPodItem} color={TEAL} />
+          <Button title="ADD" onPress={addPodItems} color={TEAL} />
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -123,13 +120,17 @@ const styles = StyleSheet.create({
   },
   gridView: {
     marginTop: 10,
+    padding: 20,
     flex: 1,
   },
   itemContainer: {
+    flex: 1,
     justifyContent: "flex-end",
     borderRadius: 16,
     padding: 10,
     height: 150,
+    margin: 5, // Add margin to create spacing
+
     // backgroundColor: GREY,
   },
   itemName: {
@@ -155,54 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
   },
-  // honeydewBC: {
-  //   backgroundColor: HONEYDEW,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // purpleBC: {
-  //   backgroundColor: PURPLE,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  //   color: HONEYDEW,
-  // },
-  // tealBC: {
-  //   backgroundColor: TEAL,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // greyBC: {
-  //   backgroundColor: GREY,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // redBC: {
-  //   backgroundColor: RED,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // peachBC: {
-  //   backgroundColor: PEACH,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
-  // yellowBC: {
-  //   backgroundColor: YELLOW,
-  //   padding: 20,
-  //   marginVertical: 8,
-  //   marginHorizontal: 16,
-  //   borderRadius: 16,
-  // },
+  columnWrapper: {
+    justifyContent: "space-between", // Space items within each row
+  },
 });

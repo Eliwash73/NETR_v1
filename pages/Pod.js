@@ -1,7 +1,8 @@
-import { useNavigation } from "@react-navigation/native";
+import * as SQLite from "expo-sqlite";
 import { nanoid } from "nanoid";
-import React, { Component, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Button,
   FlatList,
   ScrollView,
@@ -11,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
+import { Dropdown } from "react-native-element-dropdown";
 import "react-native-get-random-values";
 import Modal from "react-native-modal";
 import {
@@ -23,44 +25,91 @@ import {
   YELLOW,
   colorSelect,
 } from "../components/NETRTheme";
-
-import PodWidget from "../components/PodWidget";
-import AddPod from "../components/addPodButton";
+import AddPodButton from "../components/addPodButton";
+import DeletePodButton from "../components/deletePodButton";
+import { addPod, deletePod, fetchPods, initDb } from "../util/db";
 import PodInfoScreen from "./PodInfo";
+import PodWidget from "./PodWidget";
 
 export default function HomeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selected, setSelected] = useState("Honeydew");
-  const [podList, setPodList] = useState([]);
+  const [selectedColor, setSelectedColor] = useState("Honeydew");
+  const [pods, setPods] = useState([]);
   const [podName, setPodName] = useState("");
 
-  const handleModal = () => setModalVisible(() => !isModalVisible);
-  const createPod = () => {
-    // Create a new pod  with the entered name and selected color
-    const newPod = {
-      id: nanoid(), //generate unique identifier
-      title: podName,
-      color: selected,
+  // initialize and fetch the data from the database
+  useEffect(() => {
+    initDb();
+    const fetchData = async () => {
+      const pods = await fetchPods();
+      setPods(pods);
+      // Uncomment the following line to log all the pods to the console.
+      for (const pod in pods) {
+        console.log(pods[pod]);
+      }
     };
-    // Update the pod list with the new pod
-    setPodList([...podList, newPod]);
-    // Close the modal
+    fetchData();
+  }, []);
+
+  const handleModal = () => setModalVisible(!isModalVisible);
+
+  const addPodtoDB = async () => {
+    // newPodId is the return of addPod.
+    const newPodId = await addPod(podName, selectedColor);
+    const newPod = {
+      id: newPodId,
+      pod_name: podName,
+      pod_color: selectedColor,
+    };
+    try {
+      // Add the new pod to the database.
+      await addPod(newPod.id, newPod.pod_name, newPod.pod_color);
+    } catch (error) {
+      console.log("Error adding pod to database: ", error.message);
+    }
+    // Add the new pod to the state array.
+    setPods((existingPods) => [...existingPods, newPod]);
+    // Reset the state of the Modal.
     setModalVisible(false);
+    // Reset the state of podName.
     setPodName("");
     console.log(newPod);
+  };
+  const deletePodFromDB = async (delID) => {
+    try {
+      await deletePod(delID);
+      // Remove the deleted pod from the state array.
+      setPods((existingPods) => existingPods.filter((pod) => pod.id !== delID));
+      // console.log(`Pod deleted successfully`);
+    } catch (error) {
+      console.log(`Error deleting pod ${delID} from database:`, error.message);
+    }
   };
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        data={podList}
+        style={styles.gridView}
+        data={pods}
         renderItem={({ item }) => (
-          <PodWidget PodTitle={item.title} PodColor={item.color} />
+          <View>
+            <PodWidget
+              PodTitle={item.pod_name}
+              PodColor={item.pod_color}
+              PodID={item.id}
+            />
+            <DeletePodButton
+              podID={item.id}
+              onPress={() => deletePodFromDB(item.id)}
+              buttonText="X"
+            />
+          </View>
         )}
         keyExtractor={(item) => item.id}
         bounces={true}
       />
-      <AddPod onPress={handleModal} buttonText="+" />
+
+      <AddPodButton onPress={handleModal} buttonText="+" />
       {/* <AddPod onPress={GoToButton} buttonText="Add a Pod" /> */}
       {/* <GoToButton screenName="PodInfo" /> */}
 
@@ -81,14 +130,14 @@ export default function HomeScreen() {
             />
             <Text style={styles.title}>Color:</Text>
             <SelectList
-              setSelected={(val) => setSelected(val)}
+              setSelected={(val) => setSelectedColor(val)}
               data={colorSelect}
               save="value"
               defaultOption={"Teal"}
               search={false}
             />
           </ScrollView>
-          <Button title="Create" onPress={createPod} color={TEAL} />
+          <Button title="Create" onPress={addPodtoDB} color={TEAL} />
         </View>
       </Modal>
     </View>
@@ -96,6 +145,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  gridView: {
+    flex: 1,
+    marginTop: 10,
+  },
   modal: {
     width: "100%",
     height: "60%",

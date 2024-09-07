@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { FlatGrid } from "react-native-super-grid";
+import { FlatGrid, SimpleGrid } from "react-native-super-grid";
 
 export default function Example() {
   const [items, setItems] = React.useState([
@@ -25,21 +25,25 @@ export default function Example() {
     { name: "SILVER", code: "#bdc3c7" },
   ]);
 
+  const numColumns = 2;
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <FlatGrid
-        itemDimension={130}
+      <FlatList
         data={items}
         style={styles.gridView}
         // staticDimension={300}
         // fixed
-        spacing={10}
+        // spacing={10}
+        numColumns={numColumns}
+        bounces={true}
         renderItem={({ item }) => (
           <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
             <Text style={styles.itemName}>{item.name}</Text>
             <Text style={styles.itemCode}>{item.code}</Text>
           </View>
         )}
+        columnWrapperStyle={styles.columnWrapper}
       />
     </SafeAreaView>
   );
@@ -47,14 +51,16 @@ export default function Example() {
 
 const styles = StyleSheet.create({
   gridView: {
-    marginTop: 10,
     flex: 1,
+    marginTop: 10,
   },
   itemContainer: {
+    flex: 1,
     justifyContent: "flex-end",
     borderRadius: 16,
-    padding: 10,
+    padding: 50,
     height: 150,
+    margin: 5, // Add margin to create spacing
   },
   itemName: {
     fontSize: 16,
@@ -65,5 +71,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 12,
     color: "#fff",
+  },
+  columnWrapper: {
+    justifyContent: "space-between", // Space items within each row
   },
 });
