@@ -28,7 +28,7 @@ export default function Example() {
   const numColumns = 2;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={items}
         style={styles.gridView}
@@ -45,7 +45,7 @@ export default function Example() {
         )}
         columnWrapperStyle={styles.columnWrapper}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

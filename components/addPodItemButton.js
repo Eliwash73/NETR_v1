@@ -1,7 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { TEAL } from "../components/NETRTheme";
 
-const AddPod = ({ onPress, buttonText }) => {
+const AddPodItemButton = ({ onPress, buttonText }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -15,18 +16,27 @@ const styles = StyleSheet.create({
   container: {
     position: "absolute",
     bottom: 20,
-    right: 20,
+    right: 10,
+    // padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    width: "20%",
+    alignItems: "center",
   },
   button: {
-    backgroundColor: "#4C3957",
+    backgroundColor: TEAL,
     paddingVertical: 10,
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
     borderRadius: 16,
+    width: "90%",
+    alignItems: "center",
   },
+
   buttonText: {
     color: "white",
     fontSize: 32,
   },
 });
 
-export default AddPod;
+export default AddPodItemButton;

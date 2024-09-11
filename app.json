@@ -2,6 +2,7 @@
   "expo": {
     "name": "NETR_v1",
     "slug": "NETR_v1",
+    "scheme": "NETR_v1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +13,8 @@
         {
           "calendarPermission": "The app needs to access your calendar."
         }
-      ]
+      ],
+      "expo-router"
     ],
     "splash": {
       "image": "./assets/splash.png",

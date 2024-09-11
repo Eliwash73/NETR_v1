@@ -1,5 +1,3 @@
-import * as SQLite from "expo-sqlite";
-import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -12,8 +10,6 @@ import {
   View,
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
-import { Dropdown } from "react-native-element-dropdown";
-import "react-native-get-random-values";
 import Modal from "react-native-modal";
 import {
   GREY,
@@ -25,11 +21,10 @@ import {
   YELLOW,
   colorSelect,
 } from "../components/NETRTheme";
+import PodWidget from "../components/PodWidget";
 import AddPodButton from "../components/addPodButton";
 import DeletePodButton from "../components/deletePodButton";
-import { addPod, deletePod, fetchPods, initDb } from "../util/db";
-import PodInfoScreen from "./PodInfo";
-import PodWidget from "./PodWidget";
+import { addPod, deletePod, fetchPods, initPodDb } from "../util/db";
 
 export default function HomeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -39,7 +34,7 @@ export default function HomeScreen() {
 
   // initialize and fetch the data from the database
   useEffect(() => {
-    initDb();
+    initPodDb();
     const fetchData = async () => {
       const pods = await fetchPods();
       setPods(pods);
@@ -94,9 +89,9 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <View>
             <PodWidget
-              PodTitle={item.pod_name}
-              PodColor={item.pod_color}
-              PodID={item.id}
+              podTitle={item.pod_name}
+              podColor={item.pod_color}
+              podID={item.id}
             />
             <DeletePodButton
               podID={item.id}
@@ -110,8 +105,6 @@ export default function HomeScreen() {
       />
 
       <AddPodButton onPress={handleModal} buttonText="+" />
-      {/* <AddPod onPress={GoToButton} buttonText="Add a Pod" /> */}
-      {/* <GoToButton screenName="PodInfo" /> */}
 
       <Modal
         isVisible={isModalVisible}
