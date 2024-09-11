@@ -1,22 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { Component } from "react";
-import {
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import {
-  GREY,
-  HONEYDEW,
-  PEACH,
-  PURPLE,
-  RED,
-  TEAL,
-  YELLOW,
-} from "../components/NETRTheme";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { GREY, HONEYDEW, PEACH, PURPLE, RED, TEAL, YELLOW } from "./NETRTheme";
 
 function colorChanger(color) {
   if (color === "Purple") {
@@ -36,23 +21,26 @@ function colorChanger(color) {
   }
 }
 
-export default function PodWidget({ PodTitle, PodColor, PodID }) {
-  const navigation = useNavigation();
-  colorChanger(PodColor);
+export default function PodWidget({ podTitle, podColor, podID }) {
+  const router = useRouter();
+  colorChanger(podColor);
 
   return (
     <View>
       <Pressable
         style={colorChanged}
         onPress={() =>
-          navigation.navigate("PodInfo", {
-            title: PodTitle,
-            color: PodColor,
-            podID: PodID,
+          router.push({
+            pathname: "PodInfo",
+            params: {
+              title: podTitle,
+              color: podColor,
+              podID: podID,
+            },
           })
         }
       >
-        <Text style={styles.title}>{PodTitle}</Text>
+        <Text style={styles.title}>{podTitle}</Text>
       </Pressable>
     </View>
   );
