@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import Modal from "react-native-modal";
 
-export default function SettingsPage() {
+export default function SettingsScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {

@@ -160,3 +160,9 @@ export const fetchPodsItems = async (podID) => {
 
   return result;
 };
+// fetch all items
+export const fetchAllPodsItems = async () => {
+  const db = await openDatabase();
+  const result = await db.getAllAsync("SELECT * FROM pod_item");
+  return result;
+};
