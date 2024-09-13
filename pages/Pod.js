@@ -26,7 +26,7 @@ import AddPodButton from "../components/addPodButton";
 import DeletePodButton from "../components/deletePodButton";
 import { addPod, deletePod, fetchPods, initPodDb } from "../util/db";
 
-export default function HomeScreen() {
+export default function PodScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Honeydew");
   const [pods, setPods] = useState([]);
@@ -108,6 +108,7 @@ export default function HomeScreen() {
 
       <Modal
         isVisible={isModalVisible}
+        avoidKeyboard={true}
         onBackButtonPress={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
       >

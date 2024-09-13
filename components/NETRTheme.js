@@ -1,3 +1,5 @@
+import { StyleSheet } from "react-native";
+
 export const NETRTheme = {
   dark: false,
   colors: {
@@ -28,3 +30,85 @@ export const colorSelect = [
   { key: "6", value: "Peach", color: PEACH },
   { key: "7", value: "Yellow", color: YELLOW },
 ];
+
+export function getColorByValue(value) {
+  const selectedColor = colorSelect.find((item) => item.value === value);
+  // If no color is found, default to a color or log an error
+  if (!selectedColor) {
+    console.error(`No color found for value: ${value}`);
+    return GREY; // Default to GREY or any other fallback color
+  }
+  return selectedColor.color;
+}
+
+export function colorChanger(color) {
+  if (color === "Purple") {
+    colorChanged = styles.purpleBC;
+  } else if (color === "Teal") {
+    colorChanged = styles.tealBC;
+  } else if (color === "Grey") {
+    colorChanged = styles.greyBC;
+  } else if (color === "Red") {
+    colorChanged = styles.redBC;
+  } else if (color === "Peach") {
+    colorChanged = styles.peachBC;
+  } else if (color === "Yellow") {
+    colorChanged = styles.yellowBC;
+  } else {
+    colorChanged = styles.honeydewBC;
+  }
+  return colorChanged;
+}
+
+const styles = StyleSheet.create({
+  honeydewBC: {
+    backgroundColor: HONEYDEW,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+  purpleBC: {
+    backgroundColor: PURPLE,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+    color: HONEYDEW,
+  },
+  tealBC: {
+    backgroundColor: TEAL,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+  greyBC: {
+    backgroundColor: GREY,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+  redBC: {
+    backgroundColor: RED,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+  peachBC: {
+    backgroundColor: PEACH,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+  yellowBC: {
+    backgroundColor: YELLOW,
+    // padding: 20,
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // borderRadius: 16,
+  },
+});

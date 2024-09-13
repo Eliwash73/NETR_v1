@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { Component, useEffect, useState } from "react";
 import {
   Button,
@@ -11,7 +11,6 @@ import {
   View,
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Modal from "react-native-modal";
 import { PodItemCategories } from "../components/NETRCategories";
 import {
@@ -22,10 +21,9 @@ import {
   RED,
   TEAL,
   YELLOW,
-  colorSelect,
+  getColorByValue,
 } from "../components/NETRTheme";
 import PodItemWidget from "../components/PodItemWidget";
-import PodWidget from "../components/PodWidget";
 import AddPodItemButton from "../components/addPodItemButton";
 import DeletePodItemButton from "../components/deletePodItemButton";
 import {
@@ -35,32 +33,28 @@ import {
   initPodItemDb,
 } from "../util/db";
 
-function getColorByValue(value) {
-  const selectedColor = colorSelect.find((item) => item.value === value);
-  // If no color is found, default to a color or log an error
-  if (!selectedColor) {
-    console.error(`No color found for value: ${value}`);
-    return GREY; // Default to GREY or any other fallback color
-  }
-  return selectedColor.color;
-}
-
 export default function PodInfoScreen() {
-  const handleModal = () => setModalVisible(() => !isModalVisible);
-  const [isModalVisible, setModalVisible] = useState(false);
   // Create a new pod  with the entered name and selected color
   const { title, color, podID } = useLocalSearchParams();
-  const numericPodID = parseInt(podID, 10); // Explicitly convert to integer
+  // Convert podID to and Int
+  const numericPodID = parseInt(podID, 10);
   // console.log({ title, color, numericPodID });
-  //pod items needs to come from the database
+  const handleModal = () => setModalVisible(() => !isModalVisible);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [podItems, setPodItems] = useState([]);
   const [podItemName, setPodItemName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [podItemQuantity, setPodItemQuantity] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("Other");
+  const navigation = useNavigation();
 
   useEffect(() => {
     initPodItemDb();
+    // Set the title of the screen based on the provided pod name.
+    if (navigation) {
+      navigation.setOptions({ title: title });
+    }
+    // Fetch the pod items for this Pod from the database.
     const fetchData = async () => {
       try {
         const items = await fetchPodsItems(numericPodID);
@@ -68,6 +62,7 @@ export default function PodInfoScreen() {
         const thisPodsItems = items.filter(
           (item) => item.pod_id === numericPodID
         );
+        // Update the state with the fetched pod items.
         setPodItems(thisPodsItems);
         // Log items for debugging
         thisPodsItems.forEach((item) => {
@@ -79,7 +74,7 @@ export default function PodInfoScreen() {
     };
 
     fetchData();
-  }, [numericPodID]); // Adding podID as a dependency to re-run if it changes
+  }, [numericPodID, navigation, title]);
 
   const handleQuantityChange = (text) => {
     const cleanedText = text.replace(/[^0-9]/g, "");
@@ -87,8 +82,7 @@ export default function PodInfoScreen() {
   };
 
   const addPodItemtoDB = async () => {
-    // use SelectedCategory, selectedDate, selectedQuantity
-    const quantity = parseInt(podItemQuantity, 10) || 0; // Default to 0 if NaN
+    const quantity = parseInt(podItemQuantity, 10) || 0;
     const newPodItem = {
       pod_id: numericPodID,
       item_name: podItemName,
@@ -105,11 +99,11 @@ export default function PodInfoScreen() {
         newPodItem.item_date,
         newPodItem.item_category
       );
+      setPodItems((existingPodItems) => [...existingPodItems, newPodItem]);
     } catch (error) {
       console.log("Error adding pod to database: ", error.message);
     }
 
-    setPodItems((existingPodItems) => [...existingPodItems, newPodItem]);
     setModalVisible(false);
     setPodItemName("");
     setPodItemQuantity("");
@@ -130,8 +124,6 @@ export default function PodInfoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{JSON.parse(JSON.stringify(title))} Pod</Text>
-
       <FlatList
         style={styles.gridView}
         data={podItems}
@@ -167,6 +159,8 @@ export default function PodInfoScreen() {
 
       <Modal
         isVisible={isModalVisible}
+        // style={styles.modal}
+        // avoidKeyboard={true}
         onBackButtonPress={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
       >
@@ -269,6 +263,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   columnWrapper: {
-    justifyContent: "space-between", // Space items within each row
+    justifyContent: "space-between",
   },
 });

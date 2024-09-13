@@ -13,6 +13,8 @@ export default function TabLayout() {
             iconName = focused ? "grid" : "grid-outline";
           } else if (route.name === "calendar") {
             iconName = focused ? "calendar" : "calendar-outline";
+          } else if (route.name === "items") {
+            iconName = focused ? "reorder-four" : "reorder-two";
           } else if (route.name === "settings") {
             iconName = focused ? "settings" : "settings-outline";
           }
@@ -26,6 +28,12 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Pods",
+        }}
+      />
+      <Tabs.Screen
+        name="items"
+        options={{
+          title: "Items",
         }}
       />
       <Tabs.Screen

@@ -2,7 +2,7 @@ import React from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { FlatGrid, SimpleGrid } from "react-native-super-grid";
 
-export default function Example() {
+export default function CalendarScreen() {
   const [items, setItems] = React.useState([
     { name: "TURQUOISE", code: "#1abc9c" },
     { name: "EMERALD", code: "#2ecc71" },
