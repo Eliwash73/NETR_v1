@@ -1,7 +1,7 @@
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { Component, useEffect, useState } from "react";
 import {
-  Button,
   FlatList,
   Pressable,
   ScrollView,
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
 import Modal from "react-native-modal";
-import { PodItemCategories } from "../components/NETRCategories";
+import { PodItemCategories, PodItemUnits } from "../components/NETRCategories";
 import {
   GREY,
   HONEYDEW,
@@ -25,10 +25,12 @@ import {
 } from "../components/NETRTheme";
 import PodItemWidget from "../components/PodItemWidget";
 import AddPodItemButton from "../components/addPodItemButton";
+import CustomButton from "../components/customButton";
 import DeletePodItemButton from "../components/deletePodItemButton";
 import {
   addPodItem,
   deletePodItem,
+  fetchAllPodsItems,
   fetchPodsItems,
   initPodItemDb,
 } from "../util/db";
@@ -45,48 +47,58 @@ export default function PodInfoScreen() {
   const [podItemName, setPodItemName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [podItemQuantity, setPodItemQuantity] = useState(0);
+  const [podItemQuantityUnit, setPodItemQuantityUnit] = useState("Other");
   const [selectedCategory, setSelectedCategory] = useState("Other");
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    initPodItemDb();
-    // Set the title of the screen based on the provided pod name.
-    if (navigation) {
-      navigation.setOptions({ title: title });
-    }
-    // Fetch the pod items for this Pod from the database.
-    const fetchData = async () => {
-      try {
-        const items = await fetchPodsItems(numericPodID);
-        // only return items from this Pod
-        const thisPodsItems = items.filter(
-          (item) => item.pod_id === numericPodID
-        );
-        // Update the state with the fetched pod items.
-        setPodItems(thisPodsItems);
-        // Log items for debugging
-        thisPodsItems.forEach((item) => {
-          console.log(item);
-        });
-      } catch (error) {
-        console.error("Error fetching pod items:", error);
+    if (isFocused) {
+      // Initialize the pod item database.
+      initPodItemDb();
+      // Set the title of the screen based on the provided pod name.
+      if (navigation) {
+        navigation.setOptions({ title: title });
       }
-    };
-
-    fetchData();
-  }, [numericPodID, navigation, title]);
+      // Fetch the pod items for this Pod from the database.
+      const fetchData = async () => {
+        try {
+          // only return items from this Pod
+          const items = await fetchPodsItems(numericPodID);
+          setPodItems(items);
+          // Log pods items for debugging
+          items.forEach((item) => {
+            console.log("podinfo page", item.pod_item_name);
+          });
+        } catch (error) {
+          console.error("Error fetching pod items:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [isFocused, numericPodID, navigation, title]);
 
   const handleQuantityChange = (text) => {
-    const cleanedText = text.replace(/[^0-9]/g, "");
+    // Remove any characters that are not digits or decimal points
+    const cleanedText = text.replace(/[^0-9.]/g, "");
+
+    // Ensure there is at most one decimal point
+    const decimalCount = (cleanedText.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return; // Do nothing if there's more than one decimal point
+    }
+
+    // Set the cleaned and valid text
     setPodItemQuantity(cleanedText);
   };
 
   const addPodItemtoDB = async () => {
-    const quantity = parseInt(podItemQuantity, 10) || 0;
+    const quantity = parseFloat(podItemQuantity);
     const newPodItem = {
       pod_id: numericPodID,
-      item_name: podItemName,
+      item_name: podItemName.trim(),
       item_quantity: quantity,
+      item_quantity_unit: podItemQuantityUnit,
       item_date: selectedDate,
       item_category: selectedCategory,
     };
@@ -96,20 +108,28 @@ export default function PodInfoScreen() {
         newPodItem.pod_id,
         newPodItem.item_name,
         newPodItem.item_quantity,
+        newPodItem.item_quantity_unit,
         newPodItem.item_date,
         newPodItem.item_category
       );
-      setPodItems((existingPodItems) => [...existingPodItems, newPodItem]);
+
+      // Update the local state with the new pod item.
+      const items = await fetchPodsItems(numericPodID);
+      setPodItems(items);
+
+      fetchAllPodsItems();
     } catch (error) {
       console.log("Error adding pod to database: ", error.message);
     }
 
     setModalVisible(false);
     setPodItemName("");
-    setPodItemQuantity("");
-    setSelectedDate(null);
+    setPodItemQuantity(0);
+    setPodItemQuantityUnit("Other");
+    setSelectedDate("");
     console.log(newPodItem);
   };
+
   const deletePodItemFromDB = async (delID) => {
     try {
       await deletePodItem(delID);
@@ -140,14 +160,11 @@ export default function PodInfoScreen() {
               podID={item.pod_id}
               podItemName={item.pod_item_name}
               podItemQuantity={item.pod_item_quantity}
+              podItemQuantityUnit={item.pod_item_quantity_unit}
               podItemDate={item.pod_item_date}
               podItemCategory={item.pod_category}
             />
-            <DeletePodItemButton
-              podID={item.id}
-              onPress={() => deletePodItemFromDB(item.id)}
-              buttonText="X"
-            />
+            <DeletePodItemButton onPress={() => deletePodItemFromDB(item.id)} />
           </View>
         )}
         keyExtractor={(item) => String(item.id)}
@@ -155,7 +172,7 @@ export default function PodInfoScreen() {
         columnWrapperStyle={styles.columnWrapper}
       />
 
-      <AddPodItemButton onPress={handleModal} buttonText="+" />
+      <AddPodItemButton color={color} onPress={handleModal} buttonText="+" />
 
       <Modal
         isVisible={isModalVisible}
@@ -168,31 +185,40 @@ export default function PodInfoScreen() {
           <ScrollView>
             <TextInput
               style={styles.nameInput}
-              placeholder="item name"
-              placeholderTextColor={PURPLE}
+              placeholder="Enter an Item Name"
               onChangeText={(text) => setPodItemName(text)}
               maxLength={20}
               value={podItemName}
             />
-            <TextInput
-              style={styles.quantityInput}
-              placeholder={"Enter quantity"}
-              keyboardType="numeric"
-              placeholderTextColor={PURPLE}
-              onChangeText={handleQuantityChange}
-              value={podItemQuantity}
-            />
+            <View style={styles.quantityUnitContainer}>
+              <TextInput
+                style={styles.quantityInput}
+                placeholder={"Enter a quantity"}
+                keyboardType="numeric"
+                onChangeText={handleQuantityChange}
+                value={podItemQuantity}
+              />
+              <SelectList
+                setSelected={(val) => setPodItemQuantityUnit(val)}
+                data={PodItemUnits}
+                save="abbrv"
+                defaultOption={"Other"}
+                placeholder={"Select a Unit"}
+                search={true}
+              />
+            </View>
+
             <SelectList
               setSelected={(val) => setSelectedCategory(val)}
               data={PodItemCategories}
               save="value"
               defaultOption={"Other"}
+              placeholder={"Select a Category"}
               search={false}
-              boxStyles={styles.selectList}
             />
           </ScrollView>
-          <View style={{ flex: 1 }}>
-            <Button title="ADD" onPress={addPodItemtoDB} color={TEAL} />
+          <View style={{ paddingTop: 10 }}>
+            <CustomButton title="ADD" onPress={addPodItemtoDB} color={TEAL} />
           </View>
         </View>
       </Modal>
@@ -222,17 +248,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 10,
     height: 150,
-    margin: 5,
+    // margin: 5,
   },
-  selectList: {
-    // marginBottom: 50,
-    flex: 1,
+  quantityUnitContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
   },
   itemName: {
     fontSize: 16,
-    color: "#fff",
+    // color: "#fff",
     fontWeight: "600",
-    // marginTop: 100,
   },
   itemCode: {
     fontWeight: "600",
@@ -241,7 +267,6 @@ const styles = StyleSheet.create({
   },
   modal: {
     width: "100%",
-    height: "50%",
     backgroundColor: HONEYDEW,
     borderRadius: 16,
     padding: 25,
@@ -252,7 +277,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 8,
     padding: 10,
-    marginBottom: 20,
+    // marginBottom: 20,
+    marginRight: 10,
   },
   nameInput: {
     flex: 1,
@@ -260,7 +286,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 8,
     padding: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   columnWrapper: {
     justifyContent: "space-between",

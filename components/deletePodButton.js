@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { RED } from "../components/NETRTheme";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { GREY, RED } from "./NETRTheme";
 
 const DeletePodButton = ({ onPress, buttonText }) => {
   const handleDelete = () => {
@@ -26,38 +27,27 @@ const DeletePodButton = ({ onPress, buttonText }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleDelete} style={styles.button}>
-        {/* <TouchableOpacity onPress={onPress} style={styles.button}> */}
+      <Pressable onPress={handleDelete} style={styles.button}>
         <Text style={styles.buttonText}>{buttonText}</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    bottom: 20,
-    right: 10,
-    // padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 16,
-    width: "20%",
-    alignItems: "center",
+    backgroundColor: RED,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    padding: 5,
   },
   button: {
-    backgroundColor: RED,
-    // paddingVertical: 10,
-    // paddingHorizontal: 30,
-    borderRadius: 16,
-    width: "90%",
     alignItems: "center",
   },
 
   buttonText: {
-    color: "black",
-    fontSize: 32,
+    color: "white",
+    fontSize: 16,
   },
 });
 

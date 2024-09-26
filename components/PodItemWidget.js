@@ -8,6 +8,7 @@ export default function PodItemWidget({
   podID,
   podItemName,
   podItemQuantity,
+  podItemQuantityUnit,
   podItemDate,
   podCategory,
 }) {
@@ -25,6 +26,7 @@ export default function PodItemWidget({
               podID: podID,
               item_title: podItemName,
               item_quantity: podItemQuantity,
+              item_quantity_unit: podItemQuantityUnit,
               item_date: podItemDate,
               item_category: podCategory,
             },

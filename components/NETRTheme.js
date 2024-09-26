@@ -6,20 +6,21 @@ export const NETRTheme = {
     primary: "#1B998B",
     background: "#DCE2C8",
     card: "#DCE2C8",
-    text: "#4C3957",
+    text: "#000",
     border: "#DCE2C8",
-    notification: "#4C3957",
+    notification: "#000",
   },
 };
 
 export const HONEYDEW = "#f8ffef";
-export const PURPLE = "#4C3957";
+export const PURPLE = "#675671";
 export const TEAL = "#1B998B";
 export const GREY = "#6B818C";
 export const RED = "#C83E4D";
 export const PEACH = "#F4D6CC";
 export const YELLOW = "#F4B860";
 export const EGGPLANT = "#713E5A";
+export const CORAL = "#EF767A";
 
 export const colorSelect = [
   { key: "1", value: "Honeydew", color: HONEYDEW },
@@ -29,6 +30,7 @@ export const colorSelect = [
   { key: "5", value: "Red", color: RED },
   { key: "6", value: "Peach", color: PEACH },
   { key: "7", value: "Yellow", color: YELLOW },
+  { key: "8", value: "Coral", color: CORAL },
 ];
 
 export function getColorByValue(value) {
@@ -54,6 +56,8 @@ export function colorChanger(color) {
     colorChanged = styles.peachBC;
   } else if (color === "Yellow") {
     colorChanged = styles.yellowBC;
+  } else if (color === "Coral") {
+    colorChanged = styles.coralBC;
   } else {
     colorChanged = styles.honeydewBC;
   }
@@ -63,52 +67,27 @@ export function colorChanger(color) {
 const styles = StyleSheet.create({
   honeydewBC: {
     backgroundColor: HONEYDEW,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
   },
   purpleBC: {
     backgroundColor: PURPLE,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
     color: HONEYDEW,
   },
   tealBC: {
     backgroundColor: TEAL,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
   },
   greyBC: {
     backgroundColor: GREY,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
   },
   redBC: {
     backgroundColor: RED,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
   },
   peachBC: {
     backgroundColor: PEACH,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
   },
   yellowBC: {
     backgroundColor: YELLOW,
-    // padding: 20,
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // borderRadius: 16,
+  },
+  coralBC: {
+    backgroundColor: CORAL,
   },
 });

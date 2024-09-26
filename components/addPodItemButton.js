@@ -1,13 +1,16 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TEAL } from "../components/NETRTheme";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { GREY, TEAL, getColorByValue } from "../components/NETRTheme";
 
-const AddPodItemButton = ({ onPress, buttonText }) => {
+const AddPodItemButton = ({ onPress, color, buttonText }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress} style={styles.button}>
+      <Pressable
+        onPress={onPress}
+        style={[styles.button, { backgroundColor: getColorByValue(color) }]}
+      >
         <Text style={styles.buttonText}>{buttonText}</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -25,7 +28,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: TEAL,
+    backgroundColor: GREY,
     paddingVertical: 10,
     // paddingHorizontal: 30,
     borderRadius: 16,
