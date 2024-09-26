@@ -1,7 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { RED } from "../components/NETRTheme";
-
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 const DeletePodItemButton = ({ onPress, buttonText }) => {
   const handleDelete = () => {
     Alert.alert(
@@ -26,10 +25,11 @@ const DeletePodItemButton = ({ onPress, buttonText }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleDelete} style={styles.button}>
-        {/* <TouchableOpacity onPress={onPress} style={styles.button}> */}
+      <Pressable onPress={handleDelete} style={styles.button}>
+        {/* <Ionicons name="trash-outline" size={32} color="black" />
+                <Pressable onPress={onPress} style={styles.button}> */}
         <Text style={styles.buttonText}>{buttonText}</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: RED,
+    // backgroundColor: RED,
     // paddingVertical: 10,
     // paddingHorizontal: 30,
     borderRadius: 16,
