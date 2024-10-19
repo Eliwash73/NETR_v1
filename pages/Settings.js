@@ -1,25 +1,10 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import Modal from "react-native-modal";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function SettingsScreen() {
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
   return (
-    <View style={{ flex: 1 }}>
-      <Button title="Show modal" onPress={toggleModal} />
-
-      <Modal isVisible={isModalVisible}>
-        <View style={{ flex: 1 }}>
-          <Text>Hello!</Text>
-
-          <Button title="Hide modal" onPress={toggleModal} />
-        </View>
-      </Modal>
+    <View style={{ margin: 20 }}>
+      <Text>Settins page</Text>
     </View>
   );
 }

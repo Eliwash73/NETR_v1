@@ -48,6 +48,7 @@ export const initPodItemDb = async () => {
       CREATE TABLE IF NOT EXISTS pod_item (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               pod_id INTEGER,
+              pod_color TEXT,
               pod_item_name TEXT,
               pod_item_quantity REAL,
               pod_item_quantity_unit TEXT,
@@ -80,21 +81,33 @@ export const addPod = async (podName, podColor) => {
 // Add Pod item to database
 export const addPodItem = async (
   podId,
+  podColor,
   podItemName,
   podItemQuantity,
+  podItemQuantityUnit,
   podItemDate,
   podCategory
 ) => {
   const db = await openDatabase();
   try {
     const statement = await db.prepareAsync(
-      "INSERT INTO pod_item (pod_id, pod_item_name, pod_item_quantity, pod_item_date, pod_category) VALUES (?,?,?,?,?)"
+      `INSERT INTO pod_item (
+      pod_id, 
+      pod_color,
+      pod_item_name, 
+      pod_item_quantity, 
+      pod_item_quantity_unit, 
+      pod_item_date, 
+      pod_category
+      ) VALUES (?,?,?,?,?,?,?)`
     );
 
     const result = await statement.executeAsync([
       podId,
+      podColor,
       podItemName,
       podItemQuantity,
+      podItemQuantityUnit,
       podItemDate,
       podCategory,
     ]);
@@ -148,14 +161,11 @@ export const fetchPods = async () => {
 
 // only need to fetch pod items from specified pod
 export const fetchPodsItems = async (podID) => {
-  // export const fetchPodsItems = async () => {
   const db = await openDatabase();
   const result = await db.getAllAsync(
     "SELECT * FROM pod_item WHERE pod_id = ?",
     [podID]
   );
-  // const result = await db.getAllAsync("SELECT * FROM pod_item");
-
   return result;
 };
 
@@ -191,5 +201,18 @@ export const updatePodColor = async (newColor, podId) => {
     ]);
   } catch (error) {
     console.error("Error updating pod color:", error.message);
+  }
+};
+
+export const fetchExpirations = async () => {
+  const db = await openDatabase();
+  try {
+    const result = await db.getAllAsync(
+      "SELECT pod_item_name, pod_item_date, pod_color FROM pod_item"
+    );
+    return result;
+  } catch (error) {
+    console.error("Error fetching items for Calendar page:", error);
+    return [];
   }
 };

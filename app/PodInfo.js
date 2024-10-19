@@ -1,3 +1,4 @@
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { Component, useEffect, useState } from "react";
@@ -45,12 +46,14 @@ export default function PodInfoScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [podItems, setPodItems] = useState([]);
   const [podItemName, setPodItemName] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [podItemQuantity, setPodItemQuantity] = useState(0);
   const [podItemQuantityUnit, setPodItemQuantityUnit] = useState("Other");
   const [selectedCategory, setSelectedCategory] = useState("Other");
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  // const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -67,8 +70,9 @@ export default function PodInfoScreen() {
           const items = await fetchPodsItems(numericPodID);
           setPodItems(items);
           // Log pods items for debugging
+          console.log(title);
           items.forEach((item) => {
-            console.log("podinfo page", item.pod_item_name);
+            console.log(item);
           });
         } catch (error) {
           console.error("Error fetching pod items:", error);
@@ -96,21 +100,23 @@ export default function PodInfoScreen() {
     const quantity = parseFloat(podItemQuantity);
     const newPodItem = {
       pod_id: numericPodID,
-      item_name: podItemName.trim(),
-      item_quantity: quantity,
-      item_quantity_unit: podItemQuantityUnit,
-      item_date: selectedDate,
-      item_category: selectedCategory,
+      pod_color: color,
+      pod_item_name: podItemName.trim(),
+      pod_item_quantity: quantity,
+      pod_item_quantity_unit: podItemQuantityUnit,
+      pod_item_date: selectedDate.toLocaleDateString("fr-CA"),
+      pod_item_category: selectedCategory,
     };
     try {
       // Add the new pod to the database.
       await addPodItem(
         newPodItem.pod_id,
-        newPodItem.item_name,
-        newPodItem.item_quantity,
-        newPodItem.item_quantity_unit,
-        newPodItem.item_date,
-        newPodItem.item_category
+        newPodItem.pod_color,
+        newPodItem.pod_item_name,
+        newPodItem.pod_item_quantity,
+        newPodItem.pod_item_quantity_unit,
+        newPodItem.pod_item_date,
+        newPodItem.pod_item_category
       );
 
       // Update the local state with the new pod item.
@@ -126,7 +132,8 @@ export default function PodInfoScreen() {
     setPodItemName("");
     setPodItemQuantity(0);
     setPodItemQuantityUnit("Other");
-    setSelectedDate("");
+    setSelectedDate(new Date());
+    setSelectedCategory("Other");
     console.log(newPodItem);
   };
 
@@ -140,6 +147,17 @@ export default function PodInfoScreen() {
       console.log(`Error deleting pod ${delID} from database:`, error.message);
     }
   };
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setSelectedDate(currentDate);
+  };
+
+  const showDatePicker = () => {
+    setShow(true);
+  };
+
   const numColumns = 2;
 
   return (
@@ -172,12 +190,13 @@ export default function PodInfoScreen() {
         columnWrapperStyle={styles.columnWrapper}
       />
 
-      <AddPodItemButton color={color} onPress={handleModal} buttonText="+" />
+      <AddPodItemButton color={""} onPress={handleModal} buttonText="+" />
 
       <Modal
         isVisible={isModalVisible}
         // style={styles.modal}
         // avoidKeyboard={true}
+        // swipeDirection={["up", "left", "right", "down"]}
         onBackButtonPress={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
       >
@@ -201,21 +220,31 @@ export default function PodInfoScreen() {
               <SelectList
                 setSelected={(val) => setPodItemQuantityUnit(val)}
                 data={PodItemUnits}
-                save="abbrv"
-                defaultOption={"Other"}
+                save="value"
+                // defaultOption={{ key: "11", value: "Other" }}
                 placeholder={"Select a Unit"}
                 search={true}
               />
             </View>
-
+            {show && (
+              <DateTimePicker value={selectedDate} onChange={onChangeDate} />
+            )}
             <SelectList
               setSelected={(val) => setSelectedCategory(val)}
               data={PodItemCategories}
               save="value"
-              defaultOption={"Other"}
+              // defaultOption={{ key: "14", value: "Other", abbrv: "other" }}
               placeholder={"Select a Category"}
-              search={false}
+              search={true}
             />
+
+            <CustomButton
+              onPress={showDatePicker}
+              title="Enter Best By date"
+              // color={HONEYDEW}
+              // textStyle={styles.datePickerButton}
+            />
+            <Text>currently selected: {selectedDate.toDateString()}</Text>
           </ScrollView>
           <View style={{ paddingTop: 10 }}>
             <CustomButton title="ADD" onPress={addPodItemtoDB} color={TEAL} />
@@ -248,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 10,
     height: 150,
-    // margin: 5,
+    margin: 5,
   },
   quantityUnitContainer: {
     flexDirection: "row",
@@ -266,9 +295,11 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   modal: {
-    width: "100%",
+    // height: "30%",
     backgroundColor: HONEYDEW,
     borderRadius: 16,
+    // margin: 0,
+    justifyContent: "flex-end",
     padding: 25,
   },
   quantityInput: {
@@ -282,11 +313,16 @@ const styles = StyleSheet.create({
   },
   nameInput: {
     flex: 1,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     height: 40,
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
+  },
+  datePickerButton: {
+    color: "black",
+    borderWidth: 1,
+    borderRadius: 4,
   },
   columnWrapper: {
     justifyContent: "space-between",

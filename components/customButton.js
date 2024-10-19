@@ -1,20 +1,19 @@
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
-const CustomButton = ({ onPress, title, color }) => {
+const CustomButton = ({ onPress, title, color = "black", textStyle }) => {
   return (
     <Pressable
       onPress={onPress}
       style={[styles.button, { backgroundColor: color }]}
     >
-      <Text style={styles.buttonText}>{title}</Text>
+      <Text style={[styles.buttonText, textStyle]}>{title}</Text>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "black",
     padding: 5,
     borderRadius: 8,
   },
