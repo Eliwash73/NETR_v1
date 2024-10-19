@@ -26,8 +26,8 @@ const DeletePodItemButton = ({ onPress, buttonText }) => {
   return (
     <View style={styles.container}>
       <Pressable onPress={handleDelete} style={styles.button}>
-        {/* <Ionicons name="trash-outline" size={32} color="black" />
-                <Pressable onPress={onPress} style={styles.button}> */}
+        <Ionicons name="trash-outline" size={32} color="black" />
+        <Pressable onPress={onPress} style={styles.button}></Pressable>
         <Text style={styles.buttonText}>{buttonText}</Text>
       </Pressable>
     </View>
