@@ -16,8 +16,9 @@ export default function ItemScreen() {
       const fetchData = async () => {
         const podsItems = await fetchAllPodsItems();
         setPods(podsItems);
+        console.log("items page:");
         for (const item in podsItems) {
-          console.log("items page:", podsItems[item]);
+          console.log(podsItems[item]);
         }
       };
       fetchData();
@@ -25,37 +26,25 @@ export default function ItemScreen() {
   }, [isFocused]);
 
   return (
-    <Suspense fallback={<Loading />}>
-      <FlatList
-        style={{ flex: 1 }}
-        data={pods}
-        renderItem={({ item }) => (
-          <View>
-            <PodItemWidget
-              podColor={"Honeydew"}
-              podID={item.pod_id}
-              podItemName={item.pod_item_name}
-              podItemQuantity={item.pod_item_quantity}
-              podItemQuantityUnit={item.pod_item_quantity_unit}
-              podItemDate={item.pod_item_date}
-              podItemCategory={item.pod_category}
-            />
-          </View>
-        )}
-        keyExtractor={(item) => String(item.id)}
-        bounces={true}
-      />
-    </Suspense>
-  );
-}
-
-// const styles = StyleSheet.create({
-// });
-
-function Loading() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Loading...</Text>
-    </View>
+    <FlatList
+      style={{ flex: 1 }}
+      data={pods}
+      renderItem={({ item }) => (
+        <View>
+          <PodItemWidget
+            podColor={item.pod_color}
+            podID={item.pod_id}
+            // podItemColor={item.pod_color}
+            podItemName={item.pod_item_name}
+            podItemQuantity={item.pod_item_quantity}
+            podItemQuantityUnit={item.pod_item_quantity_unit}
+            podItemDate={item.pod_item_date}
+            podItemCategory={item.pod_category}
+          />
+        </View>
+      )}
+      keyExtractor={(item) => String(item.id)}
+      bounces={true}
+    />
   );
 }

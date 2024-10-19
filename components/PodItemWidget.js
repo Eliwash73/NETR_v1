@@ -23,12 +23,13 @@ export default function PodItemWidget({
           router.push({
             pathname: "PodItemInfo",
             params: {
-              podID: podID,
-              item_title: podItemName,
-              item_quantity: podItemQuantity,
-              item_quantity_unit: podItemQuantityUnit,
-              item_date: podItemDate,
-              item_category: podCategory,
+              pod_id: podID,
+              pod_item_color: podColor,
+              pod_item_title: podItemName,
+              pod_item_quantity: podItemQuantity,
+              pod_item_quantity_unit: podItemQuantityUnit,
+              pod_item_date: podItemDate,
+              pod_item_category: podCategory,
             },
           })
         }

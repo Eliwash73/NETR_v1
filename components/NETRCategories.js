@@ -13,6 +13,7 @@ export const PodItemCategories = [
 ];
 
 export const PodItemUnits = [
+  // { key: "0", value: "", abbrv: "" },
   { key: "1", value: "Pound (lbs.)", abbrv: "lbs" },
   { key: "2", value: "Ounce (oz.)", abbrv: "oz" },
   { key: "3", value: "Milliliter (ml)", abbrv: "ml" },
@@ -26,5 +27,15 @@ export const PodItemUnits = [
   { key: "11", value: "Fluid Ounce (fl. oz)", abbrv: "fl. oz" },
   { key: "12", value: "Cup", abbrv: "c" },
   { key: "13", value: "Container", abbrv: "container" },
-  { key: "14", value: "Other", abbrv: "other" },
+  { key: "14", value: "Other", abbrv: "" },
 ];
+
+export function getUnitByValue(value) {
+  const selectedUnit = PodItemUnits.find((item) => item.value === value);
+  // If no color is found, default to a color or log an error
+  if (!selectedUnit) {
+    console.error(`No unit found for value: ${value}`);
+    return ""; // Default to other or any other fallback color
+  }
+  return selectedUnit.abbrv;
+}

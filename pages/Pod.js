@@ -59,6 +59,7 @@ export default function PodScreen() {
         const pods = await fetchPods();
         setPods(pods);
         // Uncomment the following line to log all the pods to the console.
+        console.log("items page:");
         for (const pod in pods) {
           console.log(pods[pod]);
         }
@@ -138,10 +139,7 @@ export default function PodScreen() {
               <View style={styles.menuModal}>
                 <ScrollView>
                   <Text style={styles.title}>Pod Settings</Text>
-                  {/* <Text style={styles.subtitle}>
-                    This action cannot be undone.
-                  </Text> */}
-                  {/* <View style={styles.editButton}> */}
+
                   <Pressable
                     style={styles.editButton}
                     onPress={() =>
@@ -157,7 +155,6 @@ export default function PodScreen() {
                   >
                     <Text style={styles.text}>Edit</Text>
                   </Pressable>
-                  {/* </View> */}
                   <DeletePodButton
                     buttonText={"Delete"}
                     onPress={() => deletePodFromDB(item.id)}
